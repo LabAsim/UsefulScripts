@@ -7,7 +7,7 @@ import struct
 import sys
 import time
 import win32con as c
-import win32api
+import win32api  # pip install pywin32
 from pywin32_system32 import *
 import pywintypes
 
