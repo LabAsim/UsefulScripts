@@ -41,18 +41,7 @@ def printInfo(device):
         print("%s: %s" % (varName, getattr(settings, varName)))
 
 
-# In python:
-# https://stackoverflow.com/questions/35814309/winapi-changedisplaysettingsex-does-not-work
-# In C:
-# https://stackoverflow.com/questions/63654012/programmatically-change-windows-laptops-refresh-rate
-# About ChangeDisplaySettingsEx
-# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-changedisplaysettingsexa
-# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-changedisplaysettingsa
-
-# device = win32api.EnumDisplayDevices()
-
-
-if __name__ == "__main__":
+def ttest():
     device = win32api.EnumDisplayDevices(None, 0, 0)
 
     devmode = win32api.EnumDisplaySettings(device.DeviceName, c.ENUM_CURRENT_SETTINGS)
@@ -70,6 +59,32 @@ if __name__ == "__main__":
     win32api.ChangeDisplaySettingsEx(device.DeviceName, devmode, FlagForPrimary)
     win32api.ChangeDisplaySettingsEx()
     printInfo(device)
-    # result = set_res(1280, 720)
-    # sys.exit(result)
-    pass
+
+
+def main():
+    """
+    # In python:
+    # https://stackoverflow.com/questions/35814309/winapi-changedisplaysettingsex-does-not-work
+    # In C:
+    # https://stackoverflow.com/questions/63654012/programmatically-change-windows-laptops-refresh-rate
+    # About ChangeDisplaySettingsEx
+    # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-changedisplaysettingsexa
+    # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-changedisplaysettingsa
+
+    :return: None
+    """
+    device = win32api.EnumDisplayDevices(None, 0, 0)
+    FlagForPrimary = c.CDS_SET_PRIMARY | c.CDS_UPDATEREGISTRY | c.CDS_NORESET
+
+    while True:
+        devmode = win32api.EnumDisplaySettings(device.DeviceName, c.ENUM_CURRENT_SETTINGS)
+        if devmode.DisplayFrequency == 144:
+            devmode.DisplayFrequency = 60
+            win32api.ChangeDisplaySettingsEx(device.DeviceName, devmode, FlagForPrimary)
+            win32api.ChangeDisplaySettingsEx()
+            print(f"Display Frequency changed from 144 to 60 hz")
+        time.sleep(0.5)
+
+
+if __name__ == "__main__":
+    main()
