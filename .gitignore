@@ -1,2 +1,5 @@
 /.idea
 /venv
+/Screen_settings/dist
+/Screen_settings/build
+*.spec
