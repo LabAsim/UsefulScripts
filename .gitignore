@@ -3,3 +3,4 @@
 /Screen_settings/dist
 /Screen_settings/build
 *.spec
+Spectrum_docker/__pycache__/
