@@ -3,6 +3,8 @@ import os.path
 import pathlib
 import re
 import socket
+import subprocess
+
 import requests
 import json
 import urllib3
@@ -63,7 +65,10 @@ def stop_containers() -> None:
     They will be re-created
     """
     for container in ergo_dex_containers:
-        os.system(f"docker stop {container}")
+        # os.system(f"docker stop {container}")
+        a = subprocess.run([f"docker", "stop", f"{container}"], capture_output=True)
+        name = str(a.stdout.decode(encoding='utf-8')).strip("\n")
+        logger.debug(f"Container {name=} stopped")
 
 
 def delete_containers() -> None:
@@ -73,13 +78,20 @@ def delete_containers() -> None:
     See: https://github.com/docker/for-linux/issues/140
     """
     for container in ergo_dex_containers:
-        os.system(f"docker rm --force {container}")
+        # os.system(f"docker rm --force {container}")
+        a = subprocess.run([f"docker", "rm", "--force", f"{container}"], capture_output=True)
+        name = str(a.stdout.decode(encoding='utf-8')).strip("\n")
+        logger.debug(f"Container {name=} deleted")
 
 
 def start_dockercompose(path: str | pathlib.Path) -> None:
     """Starts docker-compose"""
 
-    os.system(f"cd {path} && docker-compose up -d")
+    path = pathlib.WindowsPath(path)
+    a = subprocess.run(["cd", path,  "&&", "docker-compose", "up", "-d"], capture_output=True, shell=True)
+    #logger.debug(f"Called {a=}")
+    for line in a.stderr.split(b"\n"):
+        logger.debug(f"{line.decode(encoding='utf-8').strip()}")
 
 
 def check_node() -> bool:

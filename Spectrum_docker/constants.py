@@ -6,3 +6,5 @@ REDIS = "redis"
 KAFKA = "kafka"
 
 ergo_dex_containers = [AMM_EXECUTOR, POOLRESOLVER, UTXO_TRACKER, REDIS, KAFKA]
+
+COLORAMA_TERMINAL_COLORS = False

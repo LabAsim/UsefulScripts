@@ -2,6 +2,7 @@ import logging
 import socket
 import sys
 import time
+import colorama
 import docker
 from Spectrum_docker.formatter import set_logging_level
 from Spectrum_docker.parser import parse_arguments
@@ -14,11 +15,14 @@ from Spectrum_docker.helper import (
     find_local_ip,
     delete_containers,
 )
+from Spectrum_docker.constants import COLORAMA_TERMINAL_COLORS
+
 
 logger = logging.getLogger()
 
 
 def main() -> None:
+    colorama.init(convert=COLORAMA_TERMINAL_COLORS)
     args = parse_arguments()
     DEBUG, ROOT_PATH = args.debug, args.path
     set_logging_level(debug=DEBUG)
@@ -49,6 +53,8 @@ def main() -> None:
     stop_containers()
     delete_containers()
     start_dockercompose(path=ROOT_PATH)
+    logger.info("The script ended")
+    time.sleep(3)
 
 
 if __name__ == "__main__":
