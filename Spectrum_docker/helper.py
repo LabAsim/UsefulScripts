@@ -2,7 +2,8 @@ import logging
 import os.path
 import pathlib
 import re
-
+import requests
+import json
 from Spectrum_docker.constants import ergo_dex_containers
 
 logger = logging.getLogger(__name__)
@@ -45,3 +46,24 @@ def start_dockercompose(path: str | pathlib.Path) -> None:
     """Starts docker-compose"""
 
     os.system(f"cd {path} && docker-compose up -d")
+
+
+def check_node() -> bool:
+    """Checks if the node is synced"""
+    url = 'http://127.0.0.1:9053/info'
+    headers = {'accept': 'application/json'}
+    req = requests.get(url, headers=headers)
+    info = json.loads(req.text)
+    fullheight = info["fullHeight"]
+    maxPeerHeight = info["maxPeerHeight"]
+    stateVersion = info["stateVersion"]
+    bestFullHeaderId = info["bestFullHeaderId"]
+    bestHeaderId = info["bestHeaderId"]
+    logger.info(f"{fullheight=} {maxPeerHeight=} {stateVersion=} {bestHeaderId=} {bestFullHeaderId=}")
+    # Avoid Nones and match the version with the network block ID
+    if (stateVersion and bestHeaderId and bestFullHeaderId) and stateVersion == bestFullHeaderId:
+        return True
+    return False
+
+
+check_node()
