@@ -9,7 +9,10 @@ from Spectrum_docker.helper import (
     replace_ip_in_config_env,
     start_dockercompose,
     stop_containers,
-    check_node, check_if_node_is_running, find_local_ip, delete_containers
+    check_node,
+    check_if_node_is_running,
+    find_local_ip,
+    delete_containers,
 )
 
 logger = logging.getLogger()

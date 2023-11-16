@@ -28,9 +28,9 @@ def find_local_ip() -> str:
     ]
     if len(ips) > 1:
         logger.warning(f"Too many {ips=}")
-        logger.warning(f"Picking the last one {ips[0]=}")
+        logger.warning(f"Picking the last one {ips[-1]=}")
 
-    return ips[0].strip()
+    return ips[-1].strip()
 
 
 def replace_ip_in_config_env(*, path: str | pathlib.Path, ip: str) -> None:
