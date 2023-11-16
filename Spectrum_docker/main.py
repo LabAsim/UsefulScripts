@@ -9,7 +9,7 @@ from Spectrum_docker.helper import (
     replace_ip_in_config_env,
     start_dockercompose,
     stop_containers,
-    check_node, check_if_node_is_running, find_local_ip
+    check_node, check_if_node_is_running, find_local_ip, delete_containers
 )
 
 logger = logging.getLogger()
@@ -42,8 +42,9 @@ def main() -> None:
         logger.error(f"{err}")
         time.sleep(5)
         sys.exit()
-        
+
     stop_containers()
+    delete_containers()
     start_dockercompose(path=ROOT_PATH)
 
 

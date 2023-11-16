@@ -30,7 +30,7 @@ def find_local_ip() -> str:
         logger.warning(f"Too many {ips=}")
         logger.warning(f"Picking the last one {ips[0]=}")
 
-    return ips[0]
+    return ips[0].strip()
 
 
 def replace_ip_in_config_env(*, path: str | pathlib.Path, ip: str) -> None:
@@ -64,6 +64,16 @@ def stop_containers() -> None:
     """
     for container in ergo_dex_containers:
         os.system(f"docker stop {container}")
+
+
+def delete_containers() -> None:
+    """
+    The containers must be deleted to avoid error
+    `error from daemon in stream: Error grabbing logs: invalid character '\x00' looking for beginning of value`
+    See: https://github.com/docker/for-linux/issues/140
+    """
+    for container in ergo_dex_containers:
+        os.system(f"docker rm --force {container}")
 
 
 def start_dockercompose(path: str | pathlib.Path) -> None:
