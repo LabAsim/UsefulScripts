@@ -2,8 +2,13 @@ import logging
 import os.path
 import pathlib
 import re
+import time
+
 import requests
 import json
+
+import urllib3
+
 from Spectrum_docker.constants import ergo_dex_containers
 
 logger = logging.getLogger(__name__)
@@ -64,3 +69,15 @@ def check_node() -> bool:
     if (stateVersion and bestHeaderId and bestFullHeaderId) and stateVersion == bestFullHeaderId:
         return True
     return False
+
+
+def check_if_node_is_running() -> bool:
+    """Checks if the node is up"""
+    url = "http://127.0.0.1:9053/info"
+    try:
+        requests.get(url)
+    except (requests.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as err:
+        logger.error(f"Cannot reach the node at {url=}")
+        return False
+
+    return True

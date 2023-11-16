@@ -9,7 +9,7 @@ from Spectrum_docker.helper import (
     replace_ip_in_config_env,
     start_dockercompose,
     stop_containers,
-    check_node
+    check_node, check_if_node_is_running
 )
 
 logger = logging.getLogger()
@@ -21,14 +21,20 @@ if __name__ == "__main__":
 
     logger.debug(f"{DEBUG=},\t{ROOT_PATH=}")
 
-hostname = socket.gethostname()
+# https://stackoverflow.com/a/166520
+# See comments for clarification
 
-ip_address = socket.gethostbyname(hostname)
-logger.debug(f"Hostname: {hostname}")
-logger.debug(f"IP Address: {ip_address}")
+hostname = socket.gethostname()
+ip_address = socket.gethostbyname_ex(hostname)[-1][-1]
+logger.info(f"Hostname: {hostname}")
+logger.info(f"IP Address: {ip_address}")
 
 if __name__ == "__main__":
     replace_ip_in_config_env(path=ROOT_PATH, ip=ip_address)
+    while not check_if_node_is_running():
+        secs = 3
+        logger.info(f"Sleeping for {secs=}")
+        time.sleep(secs)
     while not check_node():
         logger.error("The node is not synced")
         time.sleep(5)
