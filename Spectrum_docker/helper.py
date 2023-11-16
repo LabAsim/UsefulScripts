@@ -2,16 +2,35 @@ import logging
 import os.path
 import pathlib
 import re
-import time
-
+import socket
 import requests
 import json
-
 import urllib3
 
 from Spectrum_docker.constants import ergo_dex_containers
 
 logger = logging.getLogger(__name__)
+
+
+def find_local_ip() -> str:
+    """
+    Finds and returns the local ip (192.XXX..)
+    # https://stackoverflow.com/a/166520
+    # See comments for clarification
+    """
+    hostname = socket.gethostname()
+    # ip_address = socket.gethostbyname_ex(hostname)[-1][-1]
+    ips = [
+        ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if
+        (
+                not ip.startswith("127.") and not ip.startswith("172.")
+        )
+    ]
+    if len(ips) > 1:
+        logger.warning(f"Too many {ips=}")
+        logger.warning(f"Picking the last one {ips[0]=}")
+
+    return ips[0]
 
 
 def replace_ip_in_config_env(*, path: str | pathlib.Path, ip: str) -> None:

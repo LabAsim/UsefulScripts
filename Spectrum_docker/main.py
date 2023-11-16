@@ -9,7 +9,7 @@ from Spectrum_docker.helper import (
     replace_ip_in_config_env,
     start_dockercompose,
     stop_containers,
-    check_node, check_if_node_is_running
+    check_node, check_if_node_is_running, find_local_ip
 )
 
 logger = logging.getLogger()
@@ -21,15 +21,11 @@ if __name__ == "__main__":
 
     logger.debug(f"{DEBUG=},\t{ROOT_PATH=}")
 
-# https://stackoverflow.com/a/166520
-# See comments for clarification
-
-hostname = socket.gethostname()
-ip_address = socket.gethostbyname_ex(hostname)[-1][-1]
-logger.info(f"Hostname: {hostname}")
-logger.info(f"IP Address: {ip_address}")
 
 if __name__ == "__main__":
+    ip_address = find_local_ip()
+    logger.info(f"Hostname: {socket.gethostname()}")
+    logger.info(f"IP Address: {ip_address}")
     replace_ip_in_config_env(path=ROOT_PATH, ip=ip_address)
     while not check_if_node_is_running():
         secs = 3
