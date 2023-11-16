@@ -1,14 +1,16 @@
 import logging
-import os
 import socket
 import sys
 import time
-
 import docker
 from Spectrum_docker.formatter import set_logging_level
 from Spectrum_docker.parser import parse_arguments
-from Spectrum_docker.helper import replace_ip_in_config_env, start_dockercompose, stop_containers, \
+from Spectrum_docker.helper import (
+    replace_ip_in_config_env,
+    start_dockercompose,
+    stop_containers,
     check_node
+)
 
 logger = logging.getLogger()
 

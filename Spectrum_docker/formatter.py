@@ -1,15 +1,13 @@
 """Contains a custom Formatter"""
 import copy
 import logging
-
-import colorama as colorama
+import colorama
 
 
 class LoggingFormatter(logging.Formatter):
     """A custom Formatter with colors for each logging level"""
 
     format = "%(levelname)s: %(name)s |  %(message)s"
-    #
     FORMATS = {
         logging.DEBUG: f"{colorama.Fore.YELLOW}{format}{colorama.Style.RESET_ALL}",
         logging.INFO: f"{colorama.Fore.LIGHTGREEN_EX}{format}{colorama.Style.RESET_ALL}",
