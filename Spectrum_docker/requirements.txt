@@ -1,0 +1,6 @@
+colorama==0.4.6
+docker==6.1.3
+pyinstaller==6.2.0
+pywin32==306
+requests==2.31.0
+
