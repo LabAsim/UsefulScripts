@@ -64,6 +64,3 @@ def check_node() -> bool:
     if (stateVersion and bestHeaderId and bestFullHeaderId) and stateVersion == bestFullHeaderId:
         return True
     return False
-
-
-check_node()

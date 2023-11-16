@@ -19,8 +19,6 @@ if __name__ == "__main__":
 
     logger.debug(f"{DEBUG=},\t{ROOT_PATH=}")
 
-
-
 hostname = socket.gethostname()
 
 ip_address = socket.gethostbyname(hostname)
@@ -39,8 +37,5 @@ if __name__ == "__main__":
         logger.error(f"{err}")
         time.sleep(5)
         sys.exit()
-    #os.system(r'start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"') # dockerd.exe
-    #os.system(r'start "" "C:\Program Files\Docker\Docker\resources\dockerd.exe"')
-    # 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon & docker-compose up
     stop_containers()
     start_dockercompose(path=ROOT_PATH)
