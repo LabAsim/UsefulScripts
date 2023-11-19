@@ -35,18 +35,20 @@ def main() -> None:
 
     while not check_if_node_is_running():
         secs = 3
-        logger.info(f"Sleeping for {secs=}")
+        logger.warning(f"Node is not running. Sleeping for {secs=}")
         time.sleep(secs)
+    logger.info(f"Node is running")
 
     while not check_node():
-        logger.error("The node is not synced")
+        logger.warning("The node is not synced")
         time.sleep(5)
+    logger.info("Node is synced")
 
     try:
         client = docker.from_env()
         logger.debug(f"{client.containers.list()=}")
     except docker.errors.DockerException as err:
-        logger.error(f"{err}")
+        logger.critical(f"{err}")
         time.sleep(5)
         sys.exit()
 

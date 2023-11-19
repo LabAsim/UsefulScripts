@@ -88,8 +88,8 @@ def start_dockercompose(path: str | pathlib.Path) -> None:
     """Starts docker-compose"""
 
     path = pathlib.WindowsPath(path)
-    a = subprocess.run(["cd", path,  "&&", "docker-compose", "up", "-d"], capture_output=True, shell=True)
-    #logger.debug(f"Called {a=}")
+    a = subprocess.run(["cd", path, "&&", "docker-compose", "up", "-d"], capture_output=True, shell=True)
+    # logger.debug(f"Called {a=}")
     for line in a.stderr.split(b"\n"):
         logger.debug(f"{line.decode(encoding='utf-8').strip()}")
 
@@ -105,9 +105,15 @@ def check_node() -> bool:
     stateVersion = info["stateVersion"]
     bestFullHeaderId = info["bestFullHeaderId"]
     bestHeaderId = info["bestHeaderId"]
-    logger.info(f"{fullheight=} {maxPeerHeight=} {stateVersion=} {bestHeaderId=} {bestFullHeaderId=}")
+    logger.debug(f"{fullheight=}")
+    logger.debug(f"{maxPeerHeight=}")
+    logger.debug(f"{stateVersion=}")
+    logger.debug(f"{bestHeaderId=}")
+    logger.debug(f"{bestFullHeaderId=}")
     # Avoid Nones and match the version with the network block ID
-    if (stateVersion and bestHeaderId and bestFullHeaderId) and stateVersion == bestFullHeaderId:
+    if (stateVersion and bestHeaderId and bestFullHeaderId) and \
+            (stateVersion == bestFullHeaderId == bestHeaderId) and \
+            (fullheight == maxPeerHeight):
         return True
     return False
 
