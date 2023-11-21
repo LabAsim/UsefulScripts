@@ -4,6 +4,9 @@ import pathlib
 import re
 import socket
 import subprocess
+import time
+from functools import wraps
+from typing import Callable
 
 import requests
 import json
@@ -94,6 +97,40 @@ def start_dockercompose(path: str | pathlib.Path) -> None:
         logger.debug(f"{line.decode(encoding='utf-8').strip()}")
 
 
+def check_if_node_is_running() -> bool:
+    """Checks if the node is up"""
+    url = "http://127.0.0.1:9053/info"
+    try:
+        requests.get(url)
+    except (
+            requests.exceptions.ConnectionError,
+            urllib3.exceptions.NewConnectionError,
+    ):
+        logger.error(f"Cannot reach the node at {url=}")
+        return False
+
+    return True
+
+
+def loop_check_node_is_running(func: Callable) -> Callable:
+    """A decorator which checks if the node is running"""
+    @wraps(func)
+    def inner_func(*args, **kwargs) -> None:
+        """
+        Inner function which first checks
+        if the node is running and then executes the func
+        """
+        while not check_if_node_is_running():
+            secs = 3
+            logger.warning(f"Node is not running. Sleeping for {secs=}")
+            time.sleep(secs)
+        logger.info(f"Node is running")
+        func(*args, **kwargs)
+
+    return inner_func
+
+
+@loop_check_node_is_running
 def check_node() -> bool:
     """Checks if the node is synced"""
     url = 'http://127.0.0.1:9053/info'
@@ -102,29 +139,10 @@ def check_node() -> bool:
     info = json.loads(req.text)
     fullheight = info["fullHeight"]
     maxPeerHeight = info["maxPeerHeight"]
-    stateVersion = info["stateVersion"]
-    bestFullHeaderId = info["bestFullHeaderId"]
-    bestHeaderId = info["bestHeaderId"]
     logger.debug(f"{fullheight=}")
     logger.debug(f"{maxPeerHeight=}")
-    logger.debug(f"{stateVersion=}")
-    logger.debug(f"{bestHeaderId=}")
-    logger.debug(f"{bestFullHeaderId=}")
-    # Avoid Nones and match the version with the network block ID
-    if (stateVersion and bestHeaderId and bestFullHeaderId) and \
-            (stateVersion == bestFullHeaderId == bestHeaderId) and \
-            (fullheight == maxPeerHeight):
+    if (fullheight == maxPeerHeight) and \
+            (fullheight is not None) and \
+            (maxPeerHeight is not None):
         return True
     return False
-
-
-def check_if_node_is_running() -> bool:
-    """Checks if the node is up"""
-    url = "http://127.0.0.1:9053/info"
-    try:
-        requests.get(url)
-    except (requests.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as err:
-        logger.error(f"Cannot reach the node at {url=}")
-        return False
-
-    return True

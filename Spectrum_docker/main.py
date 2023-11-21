@@ -11,7 +11,6 @@ from Spectrum_docker.helper import (
     start_dockercompose,
     stop_containers,
     check_node,
-    check_if_node_is_running,
     find_local_ip,
     delete_containers,
 )
@@ -32,12 +31,6 @@ def main() -> None:
     logger.info(f"Hostname: {socket.gethostname()}")
     logger.info(f"IP Address: {ip_address}")
     replace_ip_in_config_env(path=ROOT_PATH, ip=ip_address)
-
-    while not check_if_node_is_running():
-        secs = 3
-        logger.warning(f"Node is not running. Sleeping for {secs=}")
-        time.sleep(secs)
-    logger.info(f"Node is running")
 
     while not check_node():
         logger.warning("The node is not synced")
