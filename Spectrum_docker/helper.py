@@ -114,6 +114,7 @@ def check_if_node_is_running() -> bool:
 
 def loop_check_node_is_running(func: Callable) -> Callable:
     """A decorator which checks if the node is running"""
+
     @wraps(func)
     def inner_func(*args, **kwargs) -> None:
         """
@@ -146,3 +147,14 @@ def check_node() -> bool:
             (maxPeerHeight is not None):
         return True
     return False
+
+
+def shutdown_node_gracefully() -> None:
+    """Make a post req to the node to shut down gracefully"""
+    requests.post(
+        "http://127.0.0.1:9053/node/shutdown",
+        headers={
+            'accept': 'application/json',
+            "api_key": os.getenv(key="api_key", default=1234)
+        }
+    )
