@@ -32,7 +32,7 @@ def main() -> None:
     logger.info(f"IP Address: {ip_address}")
     replace_ip_in_config_env(path=ROOT_PATH, ip=ip_address)
 
-    while not check_node():
+    while check_node() is False:
         logger.warning("The node is not synced")
         time.sleep(5)
     logger.info("Node is synced")
