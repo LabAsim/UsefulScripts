@@ -126,7 +126,7 @@ def loop_check_node_is_running(func: Callable) -> Callable:
             logger.warning(f"Node is not running. Sleeping for {secs=}")
             time.sleep(secs)
         logger.info(f"Node is running")
-        func(*args, **kwargs)
+        return func(*args, **kwargs)
 
     return inner_func
 

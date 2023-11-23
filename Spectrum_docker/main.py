@@ -16,7 +16,6 @@ from Spectrum_docker.helper import (
 )
 from Spectrum_docker.constants import COLORAMA_TERMINAL_COLORS
 
-
 logger = logging.getLogger()
 
 
@@ -32,7 +31,7 @@ def main() -> None:
     logger.info(f"IP Address: {ip_address}")
     replace_ip_in_config_env(path=ROOT_PATH, ip=ip_address)
 
-    while check_node() is False:
+    while not check_node():
         logger.warning("The node is not synced")
         time.sleep(5)
     logger.info("Node is synced")
