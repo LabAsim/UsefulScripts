@@ -155,6 +155,6 @@ def shutdown_node_gracefully() -> None:
         "http://127.0.0.1:9053/node/shutdown",
         headers={
             'accept': 'application/json',
-            "api_key": os.getenv(key="api_key", default=1234)
+            "api_key": os.getenv(key="api_key", default="1234")
         }
     )
