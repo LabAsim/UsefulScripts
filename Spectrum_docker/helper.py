@@ -4,6 +4,8 @@ import pathlib
 import re
 import socket
 import subprocess
+import sys
+import threading
 import time
 from functools import wraps
 from typing import Callable
@@ -12,6 +14,7 @@ import requests
 import json
 import urllib3
 
+import Spectrum_docker.constants
 from Spectrum_docker.constants import ergo_dex_containers
 
 logger = logging.getLogger(__name__)
@@ -97,6 +100,34 @@ def start_dockercompose(path: str | pathlib.Path) -> None:
         logger.debug(f"{line.decode(encoding='utf-8').strip()}")
 
 
+def start_node(path: str | pathlib.Path, ram_gb: int) -> None:
+    """Starts the node given the path"""
+    # We don't use Windows path here, because we use powershell in subprocess
+    path = pathlib.PurePosixPath(path)
+    logger.debug(f"{path=}")
+    subprocess.Popen(
+        args=
+        [
+            "cd", path, "&&", "java", f"-Xmx{ram_gb}g", "-jar", "ergo-5.0.15.jar", "--mainnet", "-c", "ergo.conf"
+        ],
+        shell=True,
+        stderr=None,
+        stdin=None,
+        stdout=subprocess.DEVNULL,
+    )
+
+
+def start_node_thread(path: str | pathlib.Path, ram_gb: int) -> None:
+    """Start the node in a separate thread after checking if a node is already running"""
+    if not check_if_node_is_running():
+        thr = threading.Thread(target=start_node, args=(
+            path,
+            ram_gb
+        ))
+        thr.start()
+        logger.info(f"Node started at {path =} with {ram_gb=}")
+
+
 def check_if_node_is_running() -> bool:
     """Checks if the node is up"""
     url = "http://127.0.0.1:9053/info"
@@ -121,10 +152,34 @@ def loop_check_node_is_running(func: Callable) -> Callable:
         Inner function which first checks
         if the node is running and then executes the func
         """
+        start_node_thread(
+            path=Spectrum_docker.constants.path,
+            ram_gb=Spectrum_docker.constants.ram_gb
+        )
         while not check_if_node_is_running():
+            # try:
+            #     # start_node(
+            #     #     path=Spectrum_docker.constants.path,
+            #     #     ram_gb=Spectrum_docker.constants.ram_gb
+            #     # )
+            #     thr = threading.Thread(target=start_node,args= (
+            #         Spectrum_docker.constants.path,
+            #         Spectrum_docker.constants.ram_gb
+            #     ))
+            #     thr.start()
+            #
+            #     break
+            # except Exception as err:
+            #     logger.error(f"{err=}")
+
             secs = 3
             logger.warning(f"Node is not running. Sleeping for {secs=}")
             time.sleep(secs)
+            start_node_thread(
+                path=Spectrum_docker.constants.path,
+                ram_gb=Spectrum_docker.constants.ram_gb
+            )
+
         logger.info(f"Node is running")
         return func(*args, **kwargs)
 
@@ -132,7 +187,7 @@ def loop_check_node_is_running(func: Callable) -> Callable:
 
 
 @loop_check_node_is_running
-def check_node() -> bool:
+def check_node_sync() -> bool:
     """Checks if the node is synced"""
     url = 'http://127.0.0.1:9053/info'
     headers = {'accept': 'application/json'}
