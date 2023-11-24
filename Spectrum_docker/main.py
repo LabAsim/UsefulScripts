@@ -13,6 +13,7 @@ from Spectrum_docker.helper import (
     check_node_sync,
     find_local_ip,
     delete_containers,
+    kill_itself
 )
 from Spectrum_docker.constants import COLORAMA_TERMINAL_COLORS
 
@@ -53,3 +54,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    # The pyinstaller exe hangs here and does not exit without kill_itself()
+    kill_itself()
+    sys.exit(0)

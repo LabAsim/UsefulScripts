@@ -7,6 +7,7 @@ import subprocess
 import sys
 import threading
 import time
+import psutil
 from functools import wraps
 from typing import Callable
 
@@ -104,16 +105,17 @@ def start_node(path: str | pathlib.Path, ram_gb: int) -> None:
     """Starts the node given the path"""
     # We don't use Windows path here, because we use powershell in subprocess
     path = pathlib.PurePosixPath(path)
-    logger.debug(f"{path=}")
+    # logger.debug(f"{path=}")
     subprocess.Popen(
         args=
         [
             "cd", path, "&&", "java", f"-Xmx{ram_gb}g", "-jar", "ergo-5.0.15.jar", "--mainnet", "-c", "ergo.conf"
         ],
         shell=True,
-        stderr=None,
-        stdin=None,
+        stderr=subprocess.DEVNULL,
+        stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
+        close_fds=True
     )
 
 
@@ -152,33 +154,23 @@ def loop_check_node_is_running(func: Callable) -> Callable:
         Inner function which first checks
         if the node is running and then executes the func
         """
-        start_node_thread(
-            path=Spectrum_docker.constants.path,
-            ram_gb=Spectrum_docker.constants.ram_gb
-        )
-        while not check_if_node_is_running():
-            # try:
-            #     # start_node(
-            #     #     path=Spectrum_docker.constants.path,
-            #     #     ram_gb=Spectrum_docker.constants.ram_gb
-            #     # )
-            #     thr = threading.Thread(target=start_node,args= (
-            #         Spectrum_docker.constants.path,
-            #         Spectrum_docker.constants.ram_gb
-            #     ))
-            #     thr.start()
-            #
-            #     break
-            # except Exception as err:
-            #     logger.error(f"{err=}")
-
-            secs = 3
-            logger.warning(f"Node is not running. Sleeping for {secs=}")
-            time.sleep(secs)
-            start_node_thread(
+        # start_node_thread(
+        #     path=Spectrum_docker.constants.path,
+        #     ram_gb=Spectrum_docker.constants.ram_gb
+        # )
+        if not check_if_node_is_running():
+            start_node(
                 path=Spectrum_docker.constants.path,
                 ram_gb=Spectrum_docker.constants.ram_gb
             )
+        while not check_if_node_is_running():
+            start_node(
+                path=Spectrum_docker.constants.path,
+                ram_gb=Spectrum_docker.constants.ram_gb
+            )
+            secs = 3
+            logger.warning(f"Node is not running. Sleeping for {secs=}")
+            time.sleep(secs)
 
         logger.info(f"Node is running")
         return func(*args, **kwargs)
@@ -213,3 +205,14 @@ def shutdown_node_gracefully() -> None:
             "api_key": os.getenv(key="api_key", default="1234")
         }
     )
+
+
+def kill_itself() -> None:
+    """Get the parent pid and kill recursively all the children processes"""
+    pid = os.getppid()
+    children = psutil.Process(pid).children(recursive=True)
+    for child in children:
+        process_info = child.as_dict(attrs=['name', 'pid'])
+        os.kill(process_info["pid"], 9)
+        logger.debug(f"{process_info['name']=}({process_info['pid']}) killed")
+    os.kill(pid, 9)
