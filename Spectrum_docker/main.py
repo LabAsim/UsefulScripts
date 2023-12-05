@@ -1,4 +1,5 @@
 import logging
+import os
 import socket
 import sys
 import time
@@ -23,7 +24,8 @@ logger = logging.getLogger()
 def main() -> None:
     colorama.init(convert=COLORAMA_TERMINAL_COLORS)
     args = parse_arguments()
-    DEBUG, ROOT_PATH = args.debug, args.path
+    DEBUG, ROOT_PATH, API_KEY = args.debug, args.path, args.api_key
+    os.environ["api_key"] = API_KEY
     set_logging_level(debug=DEBUG)
     logger.debug(f"{DEBUG=},\t{ROOT_PATH=}")
 

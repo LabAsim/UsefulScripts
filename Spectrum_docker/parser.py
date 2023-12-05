@@ -27,6 +27,16 @@ def parse_arguments() -> argparse.ArgumentParser.parse_args:
         default="C:\\ergo_spectrum\\ergo-dex-backend",
         help="The patch to ergo-dex-backend",
     )
+    my_parser.add_argument(
+        "--api_key",
+        type=str,
+        action="store",
+        const=True,
+        nargs="?",
+        required=False,
+        default="1234",
+        help="The api key of the node",
+    )
     return my_parser.parse_args()
 
 
