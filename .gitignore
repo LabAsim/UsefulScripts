@@ -10,10 +10,13 @@ katex_sn/__pycache__/
 katex_sn/build
 katex_sn/dist
 
+
 example*
+
+exampl*.py
+*.md
 *.spec
 *.tex
 *.pdf
 *.html
 *.ttf
-*.md
