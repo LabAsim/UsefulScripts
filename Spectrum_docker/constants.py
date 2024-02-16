@@ -8,5 +8,5 @@ ergo_dex_containers = [AMM_EXECUTOR, POOLRESOLVER, UTXO_TRACKER, REDIS, KAFKA]
 
 COLORAMA_TERMINAL_COLORS = False
 
-path = "C:\\Ergo"
-ram_gb = 1
+PATH = "C:\\Ergo"
+RAM_GB = 1

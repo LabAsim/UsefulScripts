@@ -105,7 +105,6 @@ def start_node(path: str | pathlib.Path, ram_gb: int) -> None:
     """Starts the node given the path"""
     # We don't use Windows path here, because we use powershell in subprocess
     path = pathlib.PurePosixPath(path)
-    # logger.debug(f"{path=}")
     subprocess.Popen(
         args=
         [
@@ -117,6 +116,7 @@ def start_node(path: str | pathlib.Path, ram_gb: int) -> None:
         stdout=subprocess.DEVNULL,
         close_fds=True
     )
+    logger.info(f"The node started at {path=}")
 
 
 def start_node_thread(path: str | pathlib.Path, ram_gb: int) -> None:
@@ -154,19 +154,15 @@ def loop_check_node_is_running(func: Callable) -> Callable:
         Inner function which first checks
         if the node is running and then executes the func
         """
-        # start_node_thread(
-        #     path=Spectrum_docker.constants.path,
-        #     ram_gb=Spectrum_docker.constants.ram_gb
-        # )
         if not check_if_node_is_running():
             start_node(
-                path=Spectrum_docker.constants.path,
-                ram_gb=Spectrum_docker.constants.ram_gb
+                path=Spectrum_docker.constants.PATH,
+                ram_gb=Spectrum_docker.constants.RAM_GB
             )
         while not check_if_node_is_running():
             start_node(
-                path=Spectrum_docker.constants.path,
-                ram_gb=Spectrum_docker.constants.ram_gb
+                path=Spectrum_docker.constants.PATH,
+                ram_gb=Spectrum_docker.constants.RAM_GB
             )
             secs = 3
             logger.warning(f"Node is not running. Sleeping for {secs=}")
