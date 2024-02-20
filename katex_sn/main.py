@@ -14,6 +14,10 @@ def main() -> None:
     headers = r"""
 ---
 header-includes:
+  - \usepackage{graphicx} 
+  - \usepackage{amsmath,amscd}
+  - \usepackage{tikz-cd}
+  - \usepackage{relsize}
   - \usepackage{enumitem}
   - \setlistdepth{20}
   - \renewlist{itemize}{itemize}{20}
@@ -27,6 +31,7 @@ output:
       keep_tex: yes
 ---
 \newcommand*\boldborderline[1]{\par\noindent\raisebox{.8ex}{\makebox[\linewidth]{\hrulefill\hspace{1ex}\raisebox{-.8ex}{\textbf{#1}}\hspace{1ex}\hrulefill}}}
+\newcommand*\largerm[1]{\mathlarger{\mathlarger{#1}}}
             """
     # See the command here: https://tex.stackexchange.com/a/15122
     with open(target_file, 'r+', encoding="utf-8") as f:
@@ -79,6 +84,14 @@ output:
         new_content = re.sub(
             pattern=pattern,
             repl=r"\\noindent\\hrulefill",  # r"\\noindent\\rule{\\textwidth}{0.6pt}",
+            string=new_content
+        )
+
+        # Replace `\infin`
+        pattern = re.compile(pattern=r"\\infin")
+        new_content = re.sub(
+            pattern=pattern,
+            repl=r"\\infty",  # r"\\noindent\\rule{\\textwidth}{0.6pt}",
             string=new_content
         )
 
