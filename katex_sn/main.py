@@ -11,6 +11,10 @@ logger = logging.getLogger()
 def main() -> None:
     args = parser.parse_arguments()
     target_file = args.file
+    date = args.date
+    title = args.title
+    author = args.author
+    out_file = args.out
     headers = r"""
 ---
 header-includes:
@@ -28,7 +32,14 @@ header-includes:
   - \setlist[itemize,3]{label=*}
 output:
   rmarkdown::pdf_document:
-      keep_tex: yes
+      keep_tex: yes"""
+    headers += fr"""
+title: '{title}'
+author: '{author}'
+date: '{date}'
+date-format: "DD/MM/YYYY"
+                """
+    headers += r"""
 ---
 \newcommand*\boldborderline[1]{\par\noindent\raisebox{.8ex}{\makebox[\linewidth]{\hrulefill\hspace{1ex}\raisebox{-.8ex}{\textbf{#1}}\hspace{1ex}\hrulefill}}}
 \newcommand*\largerm[1]{\mathlarger{\mathlarger{#1}}}
@@ -98,7 +109,7 @@ output:
     with open(target_file, "w", encoding="utf-8") as file:
         file.write(new_content)
 
-    os.system(f'pandoc -s {target_file} -o test.pdf --pdf-engine=xelatex  -V mainfont="Arial"')
+    os.system(f'pandoc -s {target_file} -o {out_file} --pdf-engine=xelatex  -V mainfont="Arial"')
 
 
 if __name__ == "__main__":
