@@ -4,7 +4,6 @@ import pathlib
 import re
 import socket
 import subprocess
-import sys
 import threading
 import time
 import psutil
@@ -15,7 +14,6 @@ import requests
 import json
 import urllib3
 
-import Spectrum_docker.constants
 from Spectrum_docker.constants import ergo_dex_containers
 
 logger = logging.getLogger(__name__)
@@ -46,15 +44,20 @@ def replace_ip_in_config_env(*, path: str | pathlib.Path, ip: str) -> None:
     """Replaces the ip in the config.env"""
     path_config_env = os.path.join(path, "config.env")
 
-    line = None
+    lines = None
 
     with open(path_config_env, "r+", encoding="utf-8") as file:
-        line = file.readline()
-        logger.debug(f"{line=}")
+        # Read the whole text at once
+        # Not each line seperately
+        lines = file.read()
+        logger.debug(f"{lines=}")
 
-    line = find_replace_ip_in_line(line=line, ip=ip)
+    lines = find_replace_ip_in_line(line=lines, ip=ip)
+
+    logger.debug(f"{lines=}")
+
     with open(path_config_env, "w+", encoding="utf-8") as file:
-        file.write(line)
+        file.write(lines)
 
 
 def find_replace_ip_in_line(*, line: str, ip: str) -> str:
@@ -156,13 +159,13 @@ def loop_check_node_is_running(func: Callable) -> Callable:
         """
         if not check_if_node_is_running():
             start_node(
-                path=Spectrum_docker.constants.PATH,
-                ram_gb=Spectrum_docker.constants.RAM_GB
+                path=UsefulScripts.constants.PATH,
+                ram_gb=UsefulScripts.constants.RAM_GB
             )
         while not check_if_node_is_running():
             start_node(
-                path=Spectrum_docker.constants.PATH,
-                ram_gb=Spectrum_docker.constants.RAM_GB
+                path=UsefulScripts.constants.PATH,
+                ram_gb=UsefulScripts.constants.RAM_GB
             )
             secs = 3
             logger.warning(f"Node is not running. Sleeping for {secs=}")
