@@ -16,15 +16,17 @@ from helper import (
     delete_containers,
     kill_itself
 )
-from constants import COLORAMA_TERMINAL_COLORS
+import constants
 
 logger = logging.getLogger()
 
 
 def main() -> None:
-    colorama.init(convert=COLORAMA_TERMINAL_COLORS)
+    colorama.init(convert=constants.COLORAMA_TERMINAL_COLORS)
     args = parse_arguments()
     DEBUG, ROOT_PATH, API_KEY = args.debug, args.path, args.api_key
+    # Replace the jar version
+    constants.JAR_VERSION = args.jar_version
     os.environ["api_key"] = API_KEY
     set_logging_level(debug=DEBUG)
     logger.debug(f"{DEBUG=},\t{ROOT_PATH=}")

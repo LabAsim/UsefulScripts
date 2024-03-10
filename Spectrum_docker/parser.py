@@ -37,6 +37,16 @@ def parse_arguments() -> argparse.ArgumentParser.parse_args:
         default="1234",
         help="The api key of the node",
     )
+    my_parser.add_argument(
+        "--jar_version",
+        type=str,
+        action="store",
+        const=True,
+        nargs="?",
+        required=False,
+        default="5.0.1",
+        help="The jar version of the node",
+    )
     return my_parser.parse_args()
 
 

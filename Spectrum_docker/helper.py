@@ -104,14 +104,15 @@ def start_dockercompose(path: str | pathlib.Path) -> None:
         logger.debug(f"{line.decode(encoding='utf-8').strip()}")
 
 
-def start_node(path: str | pathlib.Path, ram_gb: int) -> None:
+def start_node(path: str | pathlib.Path, ram_gb: int, jar_version: str) -> None:
     """Starts the node given the path"""
     # We don't use Windows path here, because we use powershell in subprocess
     path = pathlib.PurePosixPath(path)
     subprocess.Popen(
         args=
         [
-            "cd", path, "&&", "java", f"-Xmx{ram_gb}g", "-jar", "ergo-5.0.15.jar", "--mainnet", "-c", "ergo.conf"
+            "cd", path, "&&", "java", f"-Xmx{ram_gb}g", "-jar", f"ergo-{jar_version}.jar", "--mainnet", "-c", "ergo"
+                                                                                                              ".conf"
         ],
         shell=True,
         stderr=subprocess.DEVNULL,
@@ -122,12 +123,13 @@ def start_node(path: str | pathlib.Path, ram_gb: int) -> None:
     logger.info(f"The node started at {path=}")
 
 
-def start_node_thread(path: str | pathlib.Path, ram_gb: int) -> None:
+def start_node_thread(path: str | pathlib.Path, ram_gb: int,  jar_version: str) -> None:
     """Start the node in a separate thread after checking if a node is already running"""
     if not check_if_node_is_running():
         thr = threading.Thread(target=start_node, args=(
             path,
-            ram_gb
+            ram_gb,
+            jar_version
         ))
         thr.start()
         logger.info(f"Node started at {path =} with {ram_gb=}")
@@ -157,15 +159,16 @@ def loop_check_node_is_running(func: Callable) -> Callable:
         Inner function which first checks
         if the node is running and then executes the func
         """
-        if not check_if_node_is_running():
-            start_node(
-                path=constants.PATH,
-                ram_gb=constants.RAM_GB
-            )
+        # if not check_if_node_is_running():
+        #     start_node(
+        #         path=constants.PATH,
+        #         ram_gb=constants.RAM_GB
+        #     )
         while not check_if_node_is_running():
             start_node(
                 path=constants.PATH,
-                ram_gb=constants.RAM_GB
+                ram_gb=constants.RAM_GB,
+                jar_version=constants.JAR_VERSION
             )
             secs = 3
             logger.warning(f"Node is not running. Sleeping for {secs=}")
