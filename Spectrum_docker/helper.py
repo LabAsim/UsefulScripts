@@ -13,8 +13,8 @@ from typing import Callable
 import requests
 import json
 import urllib3
-
-from Spectrum_docker.constants import ergo_dex_containers
+import constants
+from constants import ergo_dex_containers
 
 logger = logging.getLogger(__name__)
 
@@ -159,13 +159,13 @@ def loop_check_node_is_running(func: Callable) -> Callable:
         """
         if not check_if_node_is_running():
             start_node(
-                path=UsefulScripts.constants.PATH,
-                ram_gb=UsefulScripts.constants.RAM_GB
+                path=constants.PATH,
+                ram_gb=constants.RAM_GB
             )
         while not check_if_node_is_running():
             start_node(
-                path=UsefulScripts.constants.PATH,
-                ram_gb=UsefulScripts.constants.RAM_GB
+                path=constants.PATH,
+                ram_gb=constants.RAM_GB
             )
             secs = 3
             logger.warning(f"Node is not running. Sleeping for {secs=}")

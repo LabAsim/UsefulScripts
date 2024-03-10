@@ -1,6 +1,6 @@
 import os
 
-from Spectrum_docker.parser import parse_arguments
+from parser import parse_arguments
 from helper import shutdown_node_gracefully
 
 if __name__ == "__main__":

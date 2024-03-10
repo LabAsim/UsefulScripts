@@ -5,9 +5,9 @@ import sys
 import time
 import colorama
 import docker
-from Spectrum_docker.formatter import set_logging_level
-from Spectrum_docker.parser import parse_arguments
-from Spectrum_docker.helper import (
+from formatter import set_logging_level
+from parser import parse_arguments
+from helper import (
     replace_ip_in_config_env,
     start_dockercompose,
     stop_containers,
@@ -16,7 +16,7 @@ from Spectrum_docker.helper import (
     delete_containers,
     kill_itself
 )
-from Spectrum_docker.constants import COLORAMA_TERMINAL_COLORS
+from constants import COLORAMA_TERMINAL_COLORS
 
 logger = logging.getLogger()
 
